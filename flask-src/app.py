@@ -1,8 +1,12 @@
 from ._benchmark import _benchmark
 
 from flask import request, jsonify, Flask, render_template
+from flask_socketio import SocketIO, emit, send
 
 app = Flask(__name__)
+
+#app.config['SECRET_KEY'] = 'secret!' #Obviously, for testing only
+socketio = SocketIO(app)
 
 @app.route("/")
 def home():
@@ -52,3 +56,12 @@ def benchmark():
     )
 
     return result
+
+@app.route("/wstest")
+def wstest():
+     return render_template("wstest.html")
+
+@socketio.on('my event')
+def handle_message(data):
+    print(f"Received message: {data}")
+    emit('resp', f'Thanks for sending me {data}')
