@@ -1,5 +1,7 @@
 # Snakeden - Distributed pypeformance runs
 
+![The Snakeden web interface](./screenshot.png)
+
 ## Usage
 
 ### Installation
