@@ -5,7 +5,7 @@ setup:
 	$(python) -m pip install -r requirements.txt
 
 serve:
-	$(python) -m flask run
+	$(python) -m flask --app src/app run
 
 debug:
-	$(python) -m flask run --debug
+	$(python) -m flask --app src/app run --debug
