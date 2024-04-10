@@ -2,6 +2,10 @@
 
 ![The Snakeden web interface](./screenshot.png)
 
+## Information
+
+This is a personal experimental project, and should not be relied upon at the moment.
+
 ## Usage
 
 ### Installation
