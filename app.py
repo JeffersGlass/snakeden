@@ -27,11 +27,13 @@ def home():
         vars[p] = request.args.get(p, None)
 
     if vars['base_commit']:
-        result = _benchmark(vars['base_commit'], benchmarks=vars['benchmarks'], pgo=vars['pgo'], tier2=vars['tier2'], jit=vars['jit'])
+        return _benchmark(vars['base_commit'], benchmarks=vars['benchmarks'], pgo=vars['pgo'], tier2=vars['tier2'], jit=vars['jit'])
+    else:
+        return jsonify({"Result": "No commits specified"})
         
-    return result
+    
 
-@app.route("benchmark")
+@app.route("/benchmark")
 def benchmark():
     params = ("benchmarks","pgo","tier2","jit") # 'commit' is directly accessed so it 404s on failure
     vars = {}
