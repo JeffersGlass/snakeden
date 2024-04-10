@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <form onsubmit="this.submit(); return false;" action="benchmark" method="form-example">
+        <table>
+            <tr>
+                <td><label for="commit">Commit Hash</label></td>
+                <td><input type="text" name="commit" id="commit"></td>
+            </tr>
+            <tr>
+                <td><label for="fork">Fork</label></td>
+                <td><input type="text" name="fork" id="fork"></td>
+            </tr>
+            <tr>
+                <td><label for="benchmarks">Benchmarks</label></td>
+                <td><input type="text" name="benchmarks" id="benchmarks"></td>
+            </tr>
+            <tr>
+                <td><label for="pgo">Optimized Build?</label></td>
+                <td><input type="checkbox" name="pgo" id="pgo"></td>
+            </tr>
+            <tr>
+                <td><label for="tier2">Enable Experimental JIT?</label></td>
+                <td><input type="checkbox" name="tier2" id="tier2"></td>
+            </tr>
+        </table>
+        <input type="submit" value="Run Benchmark">
+    </form>
+</body>
+<style>
+    td:has(label){
+        text-align: right;
+    }
+</style>
+</html>

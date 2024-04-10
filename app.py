@@ -10,17 +10,20 @@ import subprocess
 import sys
 import typing
 
-PYTHON = "./venv/bin/python"
-REQUIREMENTS_URL = 'https://raw.githubusercontent.com/faster-cpython/benchmarking-public/main/requirements.txt'
+VENV_PYTHON = "./venv/bin/python"
 DATA = (pathlib.Path(os.getcwd()) / "data").resolve()
 filepath = str | pathlib.Path
 
-from flask import request, jsonify, Flask
+from flask import request, jsonify, Flask, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
+    return render_template('./home.html', name="jeff")
+        
+@app.route("/compare")
+def compare():
     params = ("target_fork","target_commit","base_commit","benchmarks","pgo","tier2","jit")
     vars = {}
     for p in params:
@@ -30,8 +33,7 @@ def home():
         return _benchmark(vars['base_commit'], benchmarks=vars['benchmarks'], pgo=vars['pgo'], tier2=vars['tier2'], jit=vars['jit'])
     else:
         return jsonify({"Result": "No commits specified"})
-        
-    
+
 
 @app.route("/benchmark")
 def benchmark():
@@ -96,7 +98,7 @@ def install_reqs(dir: filepath, *, url: str | None = None, text: str | None = No
         raise ValueError("Exactly one parameter of url and text must be supplied")
     return run_commands([
         f'cd {dir}',
-        f'{PYTHON} -m pip install {f"-r {url}" if url else text}'
+        f'{VENV_PYTHON} -m pip install {f"-r {url}" if url else text}'
     ])
 
 def run_commands(commands: typing.Iterable[str], *, envvars: dict = None, env = None) -> tuple[str, str]:
