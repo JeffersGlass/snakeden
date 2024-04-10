@@ -28,23 +28,8 @@ def install_reqs(
         [f"cd {dir}", f'{VENV_PYTHON} -m pip install {f"-r {url}" if url else text}']
     )
 
-
-def clone_commit(dir: filepath, repo: str, commit: str | None) -> tuple[str, str]:
-    if not commit:
-        commit = "HEAD"
-    return run_commands(
-        [
-            f"cd {pathlib.Path(dir).resolve()}",
-            "git init",
-            f"git remote add origin https://github.com/{repo}.git",
-            f"git fetch origin {commit} --depth 1",
-            "git reset --hard FETCH_HEAD",
-        ]
-    )
-
-
 def run_commands(
-    commands: typing.Iterable[str], *, envvars: dict = None, env=None
+    commands: typing.Iterable[str], *, envvars: dict = None, env=None, need_output=False
 ) -> tuple[str, str]:
     print(f"Running commands {commands}")
     if not env:
@@ -56,8 +41,8 @@ def run_commands(
         "/bin/bash",
         text=True,
         stdin=subprocess.PIPE,
-        stdout=sys.stdout,
-        stderr=sys.stdout,
+        stdout=subprocess.PIPE if need_output else sys.stdout,
+        stderr=subprocess.PIPE if need_output else sys.stderr,
         bufsize=1,
         universal_newlines=True,
         env=env,

@@ -4,11 +4,12 @@ import pathlib
 
 from flask import jsonify
 
-from _fileutils import LongTemporaryDirectory
-from _runner import run_commands, clone_commit
+from _fileutils import LongTemporaryDirectory, outfile_hash_name
+from _runner import run_commands
+from _gitutils import clone_commit, get_git_revision_hash
 
 
-DATA = (pathlib.Path(os.getcwd()) / "data").resolve()
+DATA = (pathlib.Path(os.getcwd()).parent / "data").resolve()
 
 
 def _benchmark(
@@ -26,13 +27,17 @@ def _benchmark(
     if commit:
         outfile = (
             DATA
-            / f"{commit[:12]}_{str(hash(json.dumps(args, sort_keys=True)))[12:]}.json"
+            / outfile_hash_name(commit, args)
         )
     if not commit or not pathlib.Path(outfile).exists():
         with LongTemporaryDirectory() as tempdir:
             clone_commit(
                 tempdir, repo=fork if fork else "python/cpython", commit=commit
             )
+            if not commit:
+                commit = get_git_revision_hash(tempdir)
+                print(commit)
+                outfile = DATA / outfile_hash_name(commit, args)
             run_commands(
                 [
                     f"cd {tempdir}",
@@ -54,7 +59,7 @@ def _benchmark(
                     f"cd {tempdir}",
                     f"./python -m pyperformance run --inherit-environ PYTHON_UOPS {benchmarks} -o {outfile}",
                 ],
-                env=env,
+                env=env
             )
 
     with open(outfile, "r") as f:
