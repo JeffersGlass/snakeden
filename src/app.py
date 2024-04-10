@@ -37,19 +37,20 @@ def compare():
 
 @app.route("/benchmark")
 def benchmark():
-    params = ("benchmarks","pgo","tier2","jit") # 'commit' is directly accessed so it 404s on failure
+    params = ("commit", "benchmarks","pgo","tier2","jit")
     vars = {}
     for p in params:
         vars[p] = request.args.get(p, None)
 
-    result = _benchmark(request.args['commit'], benchmarks=vars['benchmarks'], pgo=vars['pgo'], tier2=vars['tier2'], jit=vars['jit'])
+    result = _benchmark(commit=request.args['commit'], benchmarks=vars['benchmarks'], pgo=vars['pgo'], tier2=vars['tier2'], jit=vars['jit'])
     
     return result
 
-def _benchmark(commit, fork: str | None = None, benchmarks: str | None = None, pgo: bool | None = None, tier2: bool | None = None, jit: bool | None = None):
+def _benchmark(commit: str | None = None, fork: str | None = None, benchmarks: str | None = None, pgo: bool | None = None, tier2: bool | None = None, jit: bool | None = None):
     args = {k: locals()[k] if k in locals() else None for k in ('fork', 'benchmarks', 'pgo', 'tier2', 'jit')}
-    outfile = DATA / f"{commit[:12]}_{str(hash(json.dumps(args, sort_keys=True)))[12:]}.json"
-    if not pathlib.Path(outfile).exists():
+    if commit:
+        outfile = DATA / f"{commit[:12]}_{str(hash(json.dumps(args, sort_keys=True)))[12:]}.json"
+    if not commit or not pathlib.Path(outfile).exists():
         with LongTemporaryDirectory() as tempdir:
             clone_commit(tempdir, repo=fork if fork else 'python/cpython', commit=commit)
             run_commands([
@@ -74,7 +75,8 @@ def _benchmark(commit, fork: str | None = None, benchmarks: str | None = None, p
     with open(outfile, 'r') as f:
         return jsonify(f.read())
 
-def clone_commit(dir: filepath, repo: str, commit: str) -> tuple[str, str]:
+def clone_commit(dir: filepath, repo: str, commit: str | None) -> tuple[str, str]:
+    if not commit: commit = 'HEAD'
     return run_commands([
         f'cd {pathlib.Path(dir).resolve()}',
         'git init',
