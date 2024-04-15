@@ -24,6 +24,6 @@ def get_git_revision_hash(dir: filepath) -> str:
         f'cd {dir}',
         'git rev-parse HEAD',
         ],
-        need_output=True)
+        need_output=False)
     print(f"Git hash = {result}")
     return result[0]

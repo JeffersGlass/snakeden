@@ -11,7 +11,6 @@ from _gitutils import clone_commit, get_git_revision_hash
 
 DATA = (pathlib.Path(os.getcwd()).parent / "data").resolve()
 
-
 def _benchmark(
     commit: str | None = None,
     fork: str | None = None,
@@ -19,10 +18,14 @@ def _benchmark(
     pgo: bool | None = None,
     tier2: bool | None = None,
     jit: bool | None = None,
+    jsonify: bool = True
 ):
     args = {
-        k: locals()[k] if k in locals() else None
-        for k in ("fork", "benchmarks", "pgo", "tier2", "jit")
+        "fork" : fork,
+        "benchmarks" : benchmarks,
+        "pgo" : pgo,
+        "tier2" : tier2,
+        "jit" : jit
     }
     if commit:
         outfile = (
@@ -61,6 +64,6 @@ def _benchmark(
                 ],
                 env=env
             )
-
     with open(outfile, "r") as f:
-        return jsonify(f.read())
+        if jsonify: return jsonify(f.read())
+        else: return f.read()
