@@ -1,5 +1,4 @@
 import os
-import pathlib
 import requests
 import subprocess
 import sys

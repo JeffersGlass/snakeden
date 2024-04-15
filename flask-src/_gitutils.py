@@ -1,5 +1,4 @@
 import pathlib
-import subprocess
 
 from _fileutils import filepath
 from _runner import run_commands
@@ -15,6 +14,16 @@ def clone_commit(dir: filepath, repo: str, commit: str | None) -> tuple[str, str
             f"git remote add origin https://github.com/{repo}.git",
             f"git fetch origin {commit} --depth 1",
             "git reset --hard FETCH_HEAD",
+        ]
+    )
+
+def get_head_of_remote(dir: filepath, repo: str) -> tuple[str, str]:
+    return run_commands(
+        [
+            f"cd {pathlib.Path(dir).resolve()}",
+            "git init",
+            f"git remote add origin https://github.com/{repo}.git",
+            f'git rev-parse origin/main'
         ]
     )
 
