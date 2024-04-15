@@ -8,6 +8,8 @@ import uuid
 filepath = str | pathlib.Path
 DATA = (pathlib.Path(os.getcwd()).parent / "data").resolve()
 
+PYTHON_CACHE_PATH = (pathlib.Path(os.getcwd()).parent / "pythonbuilds").resolve()
+if not PYTHON_CACHE_PATH.exists(): os.mkdir(PYTHON_CACHE_PATH)
 
 @contextlib.contextmanager
 def LongTemporaryDirectory():
@@ -31,3 +33,5 @@ def get_python_version(dir: str | pathlib.Path):
         #TODO Finish This
         pass
 
+def _need_to_build_python(commit):
+    return not (PYTHON_CACHE_PATH / commit / "python").exists()

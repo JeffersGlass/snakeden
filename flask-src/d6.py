@@ -7,12 +7,13 @@ from _benchmark import _benchmark, get_all_benchmarks, BenchmarkSet
 def main():
     client = Client('172.16.49.180:8786')
 
-    commit = '3375282bb894347b73c11752f0797d90dadaf465'
+    commit = '6e0b327690c7dd2e4e9091f81f8ad43ad5eb1631'
     pgo = False
     tier2 = False
     jit = False
     benchmarks = None
-    benchmarks = ['2to3', 'async_tree', 'float']
+    #benchmarks = ['2to3', 'async_tree', 'float']
+    benchmarks = ["concurrent_imap", "coroutines", "coverage"]
 
     if benchmarks == None:
         _benchmark_set = get_all_benchmarks()
