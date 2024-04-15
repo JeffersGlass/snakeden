@@ -45,7 +45,7 @@ def _benchmark(
                 [
                     f"cd {tempdir}",
                     f"""./configure {'--enable-optimizations --with-lto=yes' if pgo else ''} {'--enable-experimental-jit' if jit else ''}""",
-                    f'make -j{str(os.cpu_count()) if os.cpu_count() else "4"}',
+                    f'make -j4'#{str(os.cpu_count()) if os.cpu_count() else "4"}',
                     f"./python -m pip install pyperformance",
                     # f'./python -m pyperf system tune' #requires passwordless sudo
                 ]
@@ -62,7 +62,8 @@ def _benchmark(
                     f"cd {tempdir}",
                     f"./python -m pyperformance run --inherit-environ PYTHON_UOPS {benchmarks} -o {outfile}",
                 ],
-                env=env
+                env=env,
+                verbose = True
             )
     with open(outfile, "r") as f:
         if jsonify: return jsonify(f.read())

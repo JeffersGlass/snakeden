@@ -1,19 +1,13 @@
-from functools import partial
-
-from dask.distributed import LocalCluster
+from dask.distributed import Client
 
 from _benchmark import _benchmark
 
-print("Hello?")
+# LINK: https://docs.dask.org/en/latest/deploying-cli.html
 
 def main():
-    cluster = LocalCluster('localhost:9876')
-    print(cluster.dashboard_link)
-    client = cluster.get_client()
+    client = Client('172.16.49.180:8786')
 
-    bench_list = ['2to3', 'async_tree']
-    
-    commit = '185999bb3ad3f1484da8fa4b84813980b976dc3c'
+    commit = '9ee94d139197c0df8f4e096957576d124ad31c8e'
     pgo = False
     tier2 = False
     jit = False
@@ -29,15 +23,24 @@ def main():
         jsonify=False
     ))
 
-    a = client.submit(_benchmark, 
+    futures.append(client.submit(_benchmark, 
         commit=commit,
         benchmarks='async_tree',
         pgo=pgo,
         tier2=tier2,
         jit=jit,
         jsonify=False
-    )
-    futures.append(a)
+    ))
+
+    futures.append(client.submit(_benchmark, 
+        commit=commit,
+        benchmarks='float',
+        pgo=pgo,
+        tier2=tier2,
+        jit=jit,
+        jsonify=False
+    ))
+
     print(futures)
 
     print("THE RESULT IS: " + '\n---------\n'.join(client.gather(futures)))
