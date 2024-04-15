@@ -1,3 +1,4 @@
+import typing
 import json
 import os
 import pathlib
@@ -11,15 +12,45 @@ from _gitutils import clone_commit, get_git_revision_hash
 
 DATA = (pathlib.Path(os.getcwd()).parent / "data").resolve()
 
+_sentinel = object()
+
+class BenchmarkSet():
+    def __init__(self, benchmarks: list[str], obj: object,):
+        if obj != _sentinel:
+            raise ValueError("Use BenchmarkSet.fromString() or BenchmarkSet.fromList()")
+        self._benchmarks = tuple(benchmarks)
+
+    def __iter__(self):
+        return (x for x in self._benchmarks)
+
+    def __str__(self):
+        return ','.join(self._benchmarks)
+
+    @classmethod
+    def fromString(cls, s):
+        return cls([bm.strip() for bm in s.split(',')], _sentinel,)
+
+    @classmethod
+    def fromList(cls, l):
+        return cls(list(l), _sentinel)
+
+def get_all_benchmarks() -> BenchmarkSet:
+        output, err = run_commands(['../venv/bin/python -m pyperformance list_groups --no-tags'], need_output=True)
+        all = output.split("\\n\\n")[0].split("\n")
+
+        return BenchmarkSet.fromList(bm.strip("- ") for bm in all)
+    
+
 def _benchmark(
     commit: str | None = None,
     fork: str | None = None,
-    benchmarks: str | None = None,
+    benchmarks: str | BenchmarkSet | None = None,
     pgo: bool | None = None,
     tier2: bool | None = None,
     jit: bool | None = None,
     jsonify: bool = True
 ):
+    if benchmarks: bencharks = str(benchmarks)
     args = {
         "fork" : fork,
         "benchmarks" : benchmarks,
