@@ -29,7 +29,7 @@ def install_reqs(
     )
 
 def run_commands(
-    commands: typing.Iterable[str], *, envvars: dict = None, env=None, need_output=False
+    commands: typing.Iterable[str], *, envvars: dict = None, env=None, need_output=False, verbose=False
 ) -> tuple[str, str]:
     print(f"Running commands {commands}")
     if not env:
@@ -41,8 +41,8 @@ def run_commands(
         "/bin/bash",
         text=True,
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE if need_output else sys.stdout,
-        stderr=subprocess.PIPE if need_output else sys.stderr,
+        stdout=subprocess.PIPE if need_output else (sys.stdout if verbose else subprocess.DEVNULL),
+        stderr=subprocess.PIPE if need_output else (sys.stderr if verbose else subprocess.DEVNULL),
         bufsize=1,
         universal_newlines=True,
         env=env,

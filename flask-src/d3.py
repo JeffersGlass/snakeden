@@ -4,13 +4,16 @@ from dask.distributed import LocalCluster
 
 from _benchmark import _benchmark
 
+print("Hello?")
+
 if __name__ == "__main__":
         cluster = LocalCluster(n_workers=2)
+        print(cluster.dashboard_link)
         client = cluster.get_client()
 
         bench_list = ['2to3', 'async_tree']
         
-        commit = '784e076a10e828f383282df8a4b993a1b821f547'
+        commit = '185999bb3ad3f1484da8fa4b84813980b976dc3c'
         pgo = False
         tier2 = False
         jit = False
