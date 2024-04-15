@@ -25,7 +25,8 @@ def main():
             pgo=pgo,
             tier2=tier2,
             jit=jit,
-            jsonify=False
+            jsonify=False,
+            resources={'CPU':1}
         ))
 
     print(futures)

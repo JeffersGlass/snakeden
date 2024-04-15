@@ -16,3 +16,16 @@ This is a personal experimental project, and should not be relied upon at the mo
 
 ### Running a Dev Server
 Run `make debug` to run the local dev server in the browser. Go to the root url (`/`) to view the interactive interface.
+
+## Running Raw Dask Commands
+
+### Scheduler
+
+```sh
+cd flask-src && ../venv/bin/python -m dask scheduler
+```
+
+### Worker
+```
+cd flask-src && ../venv/bin/python -m dask worker --resources "CPU=1"
+```
