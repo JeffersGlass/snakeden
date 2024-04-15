@@ -21,3 +21,11 @@ def LongTemporaryDirectory():
 
 def outfile_hash_name(commit, args):
     return f"{commit[:12]}_{str(hash(json.dumps(args, sort_keys=True)))[12:]}.json"
+
+def get_python_version(dir: str | pathlib.Path):
+    workdir = pathlib.Path(dir)
+    maybe_python = workdir / "python"
+    if (workdir / "python").exists() and True:
+        #TODO Finish This
+        pass
+
