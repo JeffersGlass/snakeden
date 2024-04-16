@@ -5,7 +5,7 @@ from _benchmark import _benchmark, get_all_benchmarks, BenchmarkSet
 # LINK: https://docs.dask.org/en/latest/deploying-cli.html
 
 def main():
-    client = Client('172.16.49.180:8786')
+    client = Client('100.93.155.38:9876')
 
     commit = '6e0b327690c7dd2e4e9091f81f8ad43ad5eb1631'
     pgo = False
