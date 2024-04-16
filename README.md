@@ -29,3 +29,10 @@ cd flask-src && ../venv/bin/python -m dask scheduler
 ```
 cd flask-src && ../venv/bin/python -m dask worker --resources "CPU=1"
 ```
+
+## Notes
+
+If installing Python and getting a 'No module named _ctypes' error:
+	Unsnstall Python
+	`sudo apt install libffi-dev`
+	Reinstall Python
