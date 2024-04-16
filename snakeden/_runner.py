@@ -4,7 +4,7 @@ import subprocess
 import sys
 import typing
 
-from _fileutils import filepath
+from ._fileutils import filepath
 
 VENV_PYTHON = "./venv/bin/python"
 

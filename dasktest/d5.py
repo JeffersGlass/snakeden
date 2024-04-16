@@ -1,6 +1,6 @@
 from dask.distributed import Client
 
-from _benchmark import _benchmark
+from snakeden._benchmark import _benchmark
 
 # LINK: https://docs.dask.org/en/latest/deploying-cli.html
 

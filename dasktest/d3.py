@@ -2,7 +2,7 @@ from functools import partial
 
 from dask.distributed import LocalCluster
 
-from _benchmark import _benchmark
+from snakeden._benchmark import _benchmark
 
 print("Hello?")
 

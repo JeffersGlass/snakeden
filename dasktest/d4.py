@@ -4,7 +4,7 @@ from dask_kubernetes.operator import KubeCluster
 # LINK: https://kubernetes.dask.org/en/latest/operator_kubecluster.html
 # LINK: https://docs.dask.org/en/latest/deploying-kubernetes.html
 
-from _benchmark import _benchmark
+from snakeden._benchmark import _benchmark
 
 print("Hello?")
 
