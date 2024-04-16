@@ -29,10 +29,12 @@ class BenchmarkSet():
         return cls(list(l), _sentinel)
 
 def get_all_benchmarks() -> BenchmarkSet:
-        output, err = run_commands(['../venv/bin/python -m pyperformance list_groups --no-tags'], need_output=True)
-        all = output.split("\\n\\n")[0].split("\n")
+        output, err = run_commands(['./venv/bin/python -m pyperformance list_groups --no-tags'], need_output=True)
+        all = output.split("default")[0].split("\n")
 
-        return BenchmarkSet.fromList(bm.strip("- ") for bm in all)
+        bmset = BenchmarkSet.fromList(bm.strip("- ") for bm in all if (bm and "all (" not in bm))
+        print(f"{bmset._benchmarks=}")
+        return bmset
     
 def _benchmark(
     commit: str | None = None,
