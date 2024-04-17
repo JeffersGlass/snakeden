@@ -2,3 +2,4 @@ venv
 *.pyc
 pythonbuilds
 data
+*.egg-info

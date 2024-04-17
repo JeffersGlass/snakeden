@@ -72,15 +72,19 @@ def _benchmark(
     if not pathlib.Path(outfile_path).exists():
         logging.debug("Outfile does not exit, will need to benchmark")
         with LongTemporaryDirectory() as tempdir:
-            if use_cached_python and pathlib.Path.exists(py := PYTHON_CACHE_PATH / commit / "python"):
+            py_executable = PYTHON_CACHE_PATH / commit / "python"
+            if use_cached_python and py_executable.exists():
                 logging.debug(f"Using existing python executable at {py}")
                 py_executable = py
             else:
                 logging.debug(f"Existing python not found, will have to build")
-                _clone_and_build_python(tempdir, fork, commit, pgo, jit)
-                py_executable = tempdir / "python"
+                if py_executable.exists():
+                    shutil.rmtree(py_executable.parent.resolve())
+                if not py_executable.parent.exists():
+                    os.mkdir(py_executable.parent)
+                _clone_and_build_python(py_executable.parent, fork, commit, pgo, jit, clean=True)
                 
-                if generate_cached_python:
+                """ if generate_cached_python:
                     logging.debug(f"Caching newly-built python executable")
                     if not pathlib.Path(folder := PYTHON_CACHE_PATH / commit).exists():
                         logging.debug(f"Path {folder} does not exist and will be created")
@@ -88,11 +92,16 @@ def _benchmark(
                     newpy = folder / "python"
                     if not pathlib.Path(folder / "python").exists():
                         shutil.copyfile(tempdir / "python", newpy)
+                        #shutil.copystat(tempdir / "python", newpy)
                         st = os.stat(newpy)
                         logging.debug(f"Copied python permissions were {oct(st.st_mode)}")
                         os.chmod(newpy, st.st_mode |stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                        st = os.stat(newpy)
                         logging.debug(f"   New python permissions are  {oct(st.st_mode)}")
-                    py_executable = newpy
+
+                        shutil.copytree(tempdir / "Lib", folder / "Lib")
+                        shutil.copytree(tempdir / "Modules", folder / "Modules")
+                    py_executable = newpy """
 
             _benchmark_python(py_executable, tier2=tier2, benchmarks=benchmarks, outfile_path=outfile_path)
 
@@ -100,7 +109,7 @@ def _benchmark(
         if jsonify: return jsonify(f.read())
         else: return f.read()
 
-def _clone_and_build_python(dir, fork, commit, pgo, jit):
+def _clone_and_build_python(dir, fork, commit, pgo, jit, clean=True):
     clone_commit(
         dir, repo=fork, commit=commit
     )
@@ -112,7 +121,23 @@ def _clone_and_build_python(dir, fork, commit, pgo, jit):
         ]
     )
 
-def _benchmark_python(exe, *, tier2, benchmarks, outfile_path):
+    # delete unnecessary files
+    if clean:
+        logging.debug("Cleaning up after build")
+        for tree in [
+            dir / '.git',
+            ]:
+            logging.debug(f"Deleting {tree}")
+            shutil.rmtree(tree)
+
+        for file in [
+            dir / '_bootstrap_python'
+            ]:
+            logging.debug(f"Deleting {file}")
+            os.remove(file)
+        
+
+def _benchmark_python(exe: pathlib.Path, *, tier2, benchmarks, outfile_path):
     env = os.environ.copy()
     if tier2:
         env["PYTHON_UOPS"] = 1
@@ -122,6 +147,8 @@ def _benchmark_python(exe, *, tier2, benchmarks, outfile_path):
 
     run_commands(
         [
+            f"echo $PYTHONHOME",
+            f"echo $PYTHONPATH",
             f"{exe} -m pip install pyperformance",
             # f'./python -m pyperf system tune' #requires passwordless sudo
             f"{exe} -m pyperformance run --inherit-environ PYTHON_UOPS {benchmarks} -o {outfile_path}",
