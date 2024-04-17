@@ -6,7 +6,7 @@ import shutil
 import uuid
 
 filepath = str | pathlib.Path
-DATA = (pathlib.Path(os.getcwd()).parent / "data").resolve()
+DATA = (pathlib.Path(os.getcwd()) / "data").resolve()
 
 PYTHON_CACHE_PATH = (pathlib.Path(os.getcwd()).parent / "pythonbuilds").resolve()
 if not PYTHON_CACHE_PATH.exists(): os.mkdir(PYTHON_CACHE_PATH)

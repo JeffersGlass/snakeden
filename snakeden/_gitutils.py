@@ -1,3 +1,4 @@
+import logging
 import pathlib
 
 from ._fileutils import filepath
@@ -5,6 +6,7 @@ from ._runner import run_commands
 
 
 def clone_commit(dir: filepath, repo: str, commit: str | None) -> tuple[str, str]:
+    logging.debug(f"Cloning {repo}@{commit} to {dir=}")
     if not commit:
         commit = "HEAD"
     return run_commands(

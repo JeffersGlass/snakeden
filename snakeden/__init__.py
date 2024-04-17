@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from ._benchmark import _benchmark, get_all_benchmarks, BenchmarkSet
 
@@ -9,9 +10,11 @@ benchmark = _benchmark
 __all__ = [benchmark]
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
+    
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--benchmarks", help="A comma-separated list of benchmarks to run")
+        "-b", "--benchmarks", help="A comma-separated list of benchmarks to run")
     parser.add_argument(
         "--commit", type=str, help="The commit to establish measure performance of", required=True)
     parser.add_argument(
@@ -27,12 +30,10 @@ def main():
         "--jit", action="store_true", help="Enable the jit flag")
     
     args = parser.parse_args()
-    print(f"{args.benchmarks=}")
 
     if args.address == None:
         client = LocalCluster().get_client()
     else:
-        #client = Client('100.93.155.38:9876')
         client = Client(args.address)
 
     commit = args.commit
@@ -45,12 +46,8 @@ def main():
     else:
         _benchmark_set = BenchmarkSet.fromString(args.benchmarks)
 
-    #benchmarks = ['2to3', 'async_tree', 'float']
-    #benchmarks = ["concurrent_imap", "coroutines", "coverage"]
-
     futures = []
     for bm in _benchmark_set:
-        print(f"Assigning {bm=}")
         futures.append(client.submit(_benchmark, 
             commit=commit,
             benchmarks=bm,
@@ -58,5 +55,8 @@ def main():
             tier2=tier2,
             jit=jit,
             jsonify=False,
-            resources={'CPU':1}
+            resources={'CPU':1},
+            log_level = logging.DEBUG
         ))
+
+    print("THE RESULT IS: " + '\n---------\n'.join(client.gather(futures)))

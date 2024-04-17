@@ -1,3 +1,4 @@
+import logging
 import os
 import requests
 import subprocess
@@ -30,7 +31,8 @@ def install_reqs(
 def run_commands(
     commands: typing.Iterable[str], *, envvars: dict = None, env=None, need_output=False, verbose=False
 ) -> tuple[str, str]:
-    print(f"Running commands {commands}")
+    newline = "\n\t"
+    logging.debug(f"Running commands: {newline}{newline.join(commands)}")
     if not env:
         env = os.environ.copy()
     if envvars:
