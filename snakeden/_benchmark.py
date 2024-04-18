@@ -2,13 +2,10 @@ import logging
 import os
 import pathlib
 import shutil
-import stat
 
 from ._fileutils import LongTemporaryDirectory, get_outfile_path, _need_to_build_python, PYTHON_CACHE_PATH
 from ._runner import run_commands
 from ._gitutils import clone_commit, get_head_of_remote
-
-_sentinel = object()
 
 class BenchmarkSet():
     _sentinel = object()
@@ -135,8 +132,6 @@ def _benchmark_python(exe: pathlib.Path, *, tier2, benchmarks, outfile_path):
 
     run_commands(
         [
-            f"echo $PYTHONHOME",
-            f"echo $PYTHONPATH",
             f"{exe} -m pip install pyperformance",
             # f'./python -m pyperf system tune' #requires passwordless sudo
             f"{exe} -m pyperformance run --inherit-environ PYTHON_UOPS {benchmarks} -o {outfile_path}",
