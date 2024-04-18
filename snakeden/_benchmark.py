@@ -11,8 +11,9 @@ from ._gitutils import clone_commit, get_head_of_remote
 _sentinel = object()
 
 class BenchmarkSet():
+    _sentinel = object()
     def __init__(self, benchmarks: list[str], obj: object,):
-        if obj != _sentinel:
+        if obj != self._sentinel:
             raise ValueError("Use BenchmarkSet.fromString() or BenchmarkSet.fromList()")
         self._benchmarks = tuple(benchmarks)
 
@@ -21,14 +22,17 @@ class BenchmarkSet():
 
     def __str__(self):
         return ','.join(self._benchmarks)
+    
+    def __contains__(self, s):
+        return s in self._benchmarks
 
     @classmethod
     def fromString(cls, s):
-        return cls([bm.strip() for bm in s.split(',')], _sentinel,)
+        return cls([bm.strip() for bm in s.split(',')], cls._sentinel,)
 
     @classmethod
     def fromList(cls, l):
-        return cls(list(l), _sentinel)
+        return cls(list(l), cls._sentinel)
 
 def get_all_benchmarks() -> BenchmarkSet:
         output, err = run_commands(['./venv/bin/python -m pyperformance list_groups --no-tags'], need_output=True)
