@@ -11,6 +11,7 @@ VENV_PYTHON = "./venv/bin/python"
 
 STDOUT: typing.TypeAlias = str
 STDERR: typing.TypeAlias = str
+COMMUNICATE_OUTPUT = STDOUT, STDERR
 
 def make_virtual_env(dir: filepath) -> None:
     return run_commands([f"cd {dir}", "python -m venv venv"])

@@ -1,11 +1,19 @@
+from collections import UserString
 import logging
 import pathlib
+from typing import Self
 
 from ._fileutils import filepath
-from ._runner import run_commands
+from ._runner import run_commands, STDOUT, STDERR
+
+class Commit(UserString):
+    """Represents a git commit"""
+
+    def __eq__(self, other: Self | str):
+        return self.startswith(other) or other.startswith(self)
 
 
-def clone_commit(dir: filepath, repo: str, commit: str | None) -> tuple[str, str]:
+def clone_commit(dir: filepath, repo: str, commit: str | Commit | None) -> tuple[STDOUT, STDERR]:
     logging.debug(f"Cloning {repo}@{commit} to {dir=}")
     if not commit:
         commit = "HEAD"
@@ -19,7 +27,7 @@ def clone_commit(dir: filepath, repo: str, commit: str | None) -> tuple[str, str
         ]
     )
 
-def get_head_of_remote(dir: filepath, repo: str) -> tuple[str, str]:
+def get_head_of_remote(dir: filepath, repo: str) -> tuple[STDOUT, STDERR]:
     return run_commands(
         [
             f"cd {pathlib.Path(dir).resolve()}",
@@ -36,5 +44,5 @@ def get_git_revision_hash(dir: filepath) -> str:
         'git rev-parse HEAD',
         ],
         need_output=False)
-    print(f"Git hash = {result}")
+    logging.debug(f"Git hash = {result}")
     return result[0]

@@ -1,5 +1,5 @@
 from _runner import run_commands
-from _commit import Commit
+from _gitutils import Commit
 
 import json
 import pathlib
