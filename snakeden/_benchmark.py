@@ -96,7 +96,7 @@ def _benchmark(
         if jsonify: return jsonify(f.read())
         else: return f.read()
 
-def _clone_and_build_python(dir, fork, commit, pgo, jit, clean=True):
+def _clone_and_build_python(dir, fork, commit, pgo, jit, *, verbose=False, clean=True):
     clone_commit(
         dir, repo=fork, commit=commit
     )
@@ -105,7 +105,8 @@ def _clone_and_build_python(dir, fork, commit, pgo, jit, clean=True):
             f"cd {dir}",
             f"""./configure {'--enable-optimizations --with-lto=yes' if pgo else ''} {'--enable-experimental-jit' if jit else ''}""",
             f'make -j4'#{str(os.cpu_count()) if os.cpu_count() else "4"}',
-        ]
+        ],
+        verbose = verbose
     )
 
     # delete unnecessary files
