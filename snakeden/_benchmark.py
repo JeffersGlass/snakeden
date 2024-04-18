@@ -77,9 +77,9 @@ def _benchmark(
         logging.debug("Outfile does not exit, will need to benchmark")
         with LongTemporaryDirectory() as tempdir:
             py_executable = PYTHON_CACHE_PATH / commit / "python"
+
             if use_cached_python and py_executable.exists():
-                logging.debug(f"Using existing python executable at {py}")
-                py_executable = py
+                logging.debug(f"Using existing python executable at {py_executable}")
             else:
                 logging.debug(f"Existing python not found, will have to build")
                 if py_executable.exists():
@@ -87,27 +87,10 @@ def _benchmark(
                 if not py_executable.parent.exists():
                     os.mkdir(py_executable.parent)
                 _clone_and_build_python(py_executable.parent, fork, commit, pgo, jit, clean=True)
-                
-                """ if generate_cached_python:
-                    logging.debug(f"Caching newly-built python executable")
-                    if not pathlib.Path(folder := PYTHON_CACHE_PATH / commit).exists():
-                        logging.debug(f"Path {folder} does not exist and will be created")
-                        os.mkdir(folder)
-                    newpy = folder / "python"
-                    if not pathlib.Path(folder / "python").exists():
-                        shutil.copyfile(tempdir / "python", newpy)
-                        #shutil.copystat(tempdir / "python", newpy)
-                        st = os.stat(newpy)
-                        logging.debug(f"Copied python permissions were {oct(st.st_mode)}")
-                        os.chmod(newpy, st.st_mode |stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-                        st = os.stat(newpy)
-                        logging.debug(f"   New python permissions are  {oct(st.st_mode)}")
-
-                        shutil.copytree(tempdir / "Lib", folder / "Lib")
-                        shutil.copytree(tempdir / "Modules", folder / "Modules")
-                    py_executable = newpy """
 
             _benchmark_python(py_executable, tier2=tier2, benchmarks=benchmarks, outfile_path=outfile_path)
+    else:
+        logging.debug(f"Data file {outfile_path} already exists, using cached result")
 
     with open(outfile_path, "r") as f:
         if jsonify: return jsonify(f.read())
@@ -128,7 +111,7 @@ def _clone_and_build_python(dir, fork, commit, pgo, jit, clean=True):
     # delete unnecessary files
     if clean:
         logging.debug("Cleaning up after build")
-        for tree in [
+        """for tree in [
             dir / '.git',
             ]:
             logging.debug(f"Deleting {tree}")
@@ -138,7 +121,7 @@ def _clone_and_build_python(dir, fork, commit, pgo, jit, clean=True):
             dir / '_bootstrap_python'
             ]:
             logging.debug(f"Deleting {file}")
-            os.remove(file)
+            os.remove(file) """
         
 
 def _benchmark_python(exe: pathlib.Path, *, tier2, benchmarks, outfile_path):
