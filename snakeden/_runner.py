@@ -9,8 +9,10 @@ from ._fileutils import filepath
 
 VENV_PYTHON = "./venv/bin/python"
 
+STDOUT: typing.TypeAlias = str
+STDERR: typing.TypeAlias = str
 
-def make_virtual_env(dir: filepath) -> tuple[str, str]:
+def make_virtual_env(dir: filepath) -> None:
     return run_commands([f"cd {dir}", "python -m venv venv"])
 
 
@@ -30,7 +32,7 @@ def install_reqs(
 
 def run_commands(
     commands: typing.Iterable[str], *, envvars: dict = None, env=None, need_output=False, verbose=False
-) -> tuple[str, str]:
+) -> tuple[STDOUT, STDERR]:
     newline = "\n\t"
     logging.debug(f"Running commands: {newline}{newline.join(commands)}")
     if not env:
