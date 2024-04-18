@@ -48,7 +48,7 @@ class FileMetadata(typing.TypedDict):
     timer : typing.NotRequired[str]
     unit : str    
 
-class BenchmarkFile(typing.TypedDict):
+class BenchmarkFileData(typing.TypedDict):
     benchmarks: list[BenchmarkInnerDict]
     metadata: FileMetadata
     version: str
@@ -58,7 +58,7 @@ class BuildOptions(typing.NamedTuple):
     jit: bool
     pgo: bool
 
-def get_benchmark_build_options(data : BenchmarkFile) -> BuildOptions:
+def get_benchmark_build_options(data : BenchmarkFileData) -> BuildOptions:
     commit = Commit(data['metadata']['python_version'].split(' ')[-1])
     flags = data['metadata']['python_cflags']
     jit = 'enable-experimental-jit' in flags
